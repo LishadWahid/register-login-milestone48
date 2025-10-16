@@ -8,6 +8,7 @@ import Root from './layout/Root.jsx';
 import Home from './components/Home/Home.jsx';
 import Register from './components/Register/Register.jsx';
 import Login from './components/Login/Login.jsx';
+import { ToastContainer } from 'react-toastify';
 
 const router = createBrowserRouter([
   {
@@ -35,4 +36,5 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <RouterProvider router={router}></RouterProvider>
   </StrictMode>,
+  <ToastContainer/>
 )

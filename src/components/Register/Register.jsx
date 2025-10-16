@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { auth } from '../../firebase/firebase.init';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { Link } from 'react-router';
 
@@ -16,7 +16,9 @@ const Register = () => {
         const email = event.target.email.value;
         const password = event.target.password.value;
         const terms = event.target.terms.checked;
-        console.log('register click', email, password,terms);
+        const name = event.target.name.value;
+        const photo = event.target.photo.value;
+        console.log('register click', email, password,terms, name, photo);
         // console.log('register click', { email, password });
 
         const password6Pattern = /^.{6,}$/;
@@ -51,6 +53,22 @@ const Register = () => {
                 console.log('after creation of a new user', result.user)
                 setSuccess(true);
                 event.target.reset();
+
+                // update user profile
+                const profile = {
+                    displayName: name,
+                    photoURL: photo
+                }
+
+                updateProfile(result.user, profile)
+                .then(() => {})
+                .catch()
+
+                // send verification email;
+                sendEmailVerification(result.user)
+                .then(() => {
+                    alert('please login to your email and verify your email address');
+                })
             })
             .catch(error => {
                 console.log('error happened', error.message)
@@ -75,6 +93,10 @@ const Register = () => {
                     <div className="card-body">
                         <form onSubmit={handleRegister}>
                             <fieldset className="fieldset">
+                                <label className="label">Name</label>
+                                <input type="text" name="name" className="input" placeholder="Your Name" />
+                                <label className="label">Photo URL</label>
+                                <input type="text" name="photo" className="input" placeholder="Photo URL" />
                                 <label className="label">Email</label>
                                 <input type="email" name="email" className="input" placeholder="Email" />
                                 <label className="label">Password</label>
@@ -84,14 +106,12 @@ const Register = () => {
                                         {showPassword ? <FaEyeSlash></FaEyeSlash> : <FaEye></FaEye>}
                                     </button>
                                 </div>
-                                <div><a className="link link-hover">Forgot password?</a></div>
                                 <label className="label">
                                     <input type="checkbox"
                                     name="terms" 
                                     className="checkbox" />
                                     Accept Our Terms and Conditions
                                 </label>
-                                <div><a className='link link-hover'>Forgot password?</a></div>
                                 <button className="btn btn-neutral mt-4">Register</button>
                             </fieldset>
                             {
